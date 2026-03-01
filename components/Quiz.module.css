@@ -1,0 +1,130 @@
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.subtitle {
+  margin-bottom: 16px;
+  opacity: 0.8;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 12px;
+}
+
+.row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+
+.button {
+  padding: 12px 14px;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  background: white;
+  cursor: pointer;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.linkButton {
+  margin-top: 18px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  text-decoration: underline;
+  opacity: 0.8;
+}
+
+.topBar {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  opacity: 0.85;
+  margin-bottom: 14px;
+}
+
+.question {
+  font-size: 18px;
+  font-weight: 700;
+  margin: 12px 0;
+}
+
+.choiceList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.choiceItem {
+  padding: 10px 12px;
+  border: 1px solid #eee;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  cursor: pointer;
+}
+
+.choiceItem:hover:not(.correctChoice):not(.wrongChoice) {
+  background: #f5faff;
+}
+
+.choiceItem.disabled {
+  cursor: default;
+}
+
+.selected {
+  background: #e0f2ff;
+  border-color: #2196f3;
+}
+
+.correct {
+  color: green;
+  font-weight: bold;
+}
+
+.wrong {
+  color: red;
+  font-weight: bold;
+}
+
+.explanation {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 10px;
+  background: #f7f7f7;
+  border-radius: 8px;
+}
+
+.hint {
+  opacity: 0.8;
+  margin: 6px 0 12px;
+}
+
+.correctChoice {
+  background: #e9fbe9;
+  border-color: #2e7d32;
+}
+
+.wrongChoice {
+  background: #ffecec;
+  border-color: #c62828;
+}
+
+.answerLine {
+  margin-top: 10px;
+  font-weight: 600;
+}
