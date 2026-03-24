@@ -174,8 +174,6 @@ export default function Quiz() {
           </ReactMarkdown>
         </div>
 
-        <p className={styles.hint}>※ 複数選択可（クリックで選択/解除）</p>
-
         <ul className={styles.choiceList}>
           {q.choices.map((c) => {
             const isSelected = selected.includes(c);
