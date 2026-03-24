@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import type { QuizItem } from "@/types/quiz";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import remarkBreaks from "remark-breaks";
 import styles from "./Quiz.module.css";
 
 type Screen = "chapter" | "mode" | "quiz" | "result";
@@ -168,7 +169,7 @@ export default function Quiz() {
         </div>
 
         <div className={styles.question}>
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+          <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
             {q.question}
           </ReactMarkdown>
         </div>
@@ -225,7 +226,9 @@ export default function Quiz() {
             <p className={styles.answerLine}>正解：{q.answer.join(" / ")}</p>
 
             <div className={styles.explanation}>
-              <ReactMarkdown>{q.explanation}</ReactMarkdown>
+              <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
+                {q.explanation}
+              </ReactMarkdown>
             </div>
 
             <button className={styles.button} onClick={handleNext}>
