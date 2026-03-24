@@ -58,13 +58,6 @@
   margin-bottom: 14px;
 }
 
-.question {
-  font-size: 18px;
-  font-weight: 700;
-  margin: 12px 0;
-  white-space: pre-line;
-}
-
 .choiceList {
   list-style: none;
   padding: 0;
@@ -102,15 +95,6 @@
   font-weight: bold;
 }
 
-.explanation {
-  margin-top: 10px;
-  margin-bottom: 10px;
-  padding: 10px;
-  background: #f7f7f7;
-  border-radius: 8px;
-  white-space: pre-line;
-}
-
 .hint {
   opacity: 0.8;
   margin: 6px 0 12px;
@@ -129,4 +113,56 @@
 .answerLine {
   margin-top: 10px;
   font-weight: 600;
+}
+
+.question {
+  margin: 12px 0;
+  line-height: 1.6;
+}
+
+.explanation {
+  margin-top: 10px;
+  margin-bottom: 10px;
+  padding: 10px;
+  background: #f7f7f7;
+  border-radius: 8px;
+  line-height: 1.6;
+}
+
+/* Markdown用 */
+.question h1,
+.question h2,
+.question h3,
+.explanation h1,
+.explanation h2,
+.explanation h3 {
+  margin-top: 10px;
+}
+
+.question ul,
+.explanation ul {
+  padding-left: 20px;
+}
+
+.question code,
+.explanation code {
+  background: #eee;
+  padding: 2px 4px;
+  border-radius: 4px;
+}
+
+.question table {
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.question th,
+.question td {
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  text-align: center;
+}
+
+.question th {
+  background: #f0f0f0;
 }

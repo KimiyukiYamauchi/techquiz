@@ -2,6 +2,8 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { QuizItem } from "@/types/quiz";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import styles from "./Quiz.module.css";
 
 type Screen = "chapter" | "mode" | "quiz" | "result";
@@ -25,8 +27,8 @@ export default function Quiz() {
   useEffect(() => {
     (async () => {
       try {
-        const res = await fetch("/quiz.json");
-        if (!res.ok) throw new Error("Failed to load quiz.json");
+        const res = await fetch("/quiz2.json");
+        if (!res.ok) throw new Error("Failed to load quiz2.json");
         const json = (await res.json()) as QuizItem[];
         setData(json);
       } catch (e) {
@@ -165,7 +167,11 @@ export default function Quiz() {
           </span>
         </div>
 
-        <h2 className={styles.question}>{q.question}</h2>
+        <div className={styles.question}>
+          <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            {q.question}
+          </ReactMarkdown>
+        </div>
 
         <p className={styles.hint}>※ 複数選択可（クリックで選択/解除）</p>
 
@@ -218,7 +224,9 @@ export default function Quiz() {
 
             <p className={styles.answerLine}>正解：{q.answer.join(" / ")}</p>
 
-            <p className={styles.explanation}>{q.explanation}</p>
+            <div className={styles.explanation}>
+              <ReactMarkdown>{q.explanation}</ReactMarkdown>
+            </div>
 
             <button className={styles.button} onClick={handleNext}>
               次へ
