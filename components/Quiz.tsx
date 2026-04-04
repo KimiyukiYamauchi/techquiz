@@ -125,18 +125,44 @@ export default function Quiz() {
     const q = questions[index];
     if (!q) return null;
 
-    const correctAnswer = q.answer[0] ?? "";
-    const selectedAnswer = selected[0] ?? "";
-    const isCorrect = selectedAnswer === correctAnswer;
+    const isSingleAnswer = q.answer.length === 1;
+
+    // 並び順の違いを無視して一致判定する
+    const normalize = (arr: string[]) => [...arr].sort();
+
+    const isCorrect = isSingleAnswer
+      ? selected[0] === (q.answer[0] ?? "")
+      : normalize(selected).join("|") === normalize(q.answer).join("|");
+
+    const handleAnswer = () => {
+    if (selected.length === 0) return;
+
+    setIsAnswered(true);
+
+    if (isCorrect) {
+      setCorrectCount((c) => c + 1);
+    }
+  };
 
     const handleChoiceClick = (choice: string) => {
       if (isAnswered) return;
 
-      setSelected([choice]);
-      setIsAnswered(true);
+      if (isSingleAnswer) {
+        // 択一問題はクリックした瞬間に採点
+        setSelected([choice]);
+        setIsAnswered(true);
 
-      if (choice === correctAnswer) {
-        setCorrectCount((c) => c + 1);
+        if (choice === (q.answer[0] ?? "")) {
+          setCorrectCount((c) => c + 1);
+        }
+      } else {
+        // 複数選択問題は従来通りトグル
+        setSelected((prev) => {
+          if (prev.includes(choice)) {
+            return prev.filter((c) => c !== choice);
+          }
+          return [...prev, choice];
+        });
       }
     };
 
@@ -165,10 +191,15 @@ export default function Quiz() {
           </ReactMarkdown>
         </div>
 
+        {!isSingleAnswer && (
+          <p className={styles.hint}>※ 複数選択可（クリックで選択/解除）</p>
+        )}
+
         <ul className={styles.choiceList}>
           {q.choices.map((c) => {
             const isSelected = selected.includes(c);
-            const isAnswerChoice = c === correctAnswer;
+
+            const isAnswerChoice = q.answer.includes(c);
             const isWrongSelected = isAnswered && isSelected && !isAnswerChoice;
 
             const className = [
@@ -193,13 +224,23 @@ export default function Quiz() {
           })}
         </ul>
 
+        {!isSingleAnswer && !isAnswered && (
+          <button
+            className={styles.button}
+            onClick={handleAnswer}
+            disabled={selected.length === 0}
+          >
+            回答する
+          </button>
+        )}
+
         {isAnswered && (
           <>
             <p className={isCorrect ? styles.correct : styles.wrong}>
               {isCorrect ? "正解！" : "不正解"}
             </p>
 
-            <p className={styles.answerLine}>正解：{correctAnswer}</p>
+            <p className={styles.answerLine}>正解：{q.answer.join(" / ")}</p>
 
             <div className={styles.explanation}>
               <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
