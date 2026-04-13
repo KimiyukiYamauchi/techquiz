@@ -16,15 +16,19 @@
 }
 
 .subtitle {
-  margin-bottom: 16px;
-  opacity: 0.8;
+  margin-top: 20px;
+  font-weight: bold;
+}
+
+.wrongList {
+  margin: 10px 0;
+  padding-left: 20px;
 }
 
 .grid {
   display: flex;
   flex-direction: column;
   gap: 10px;
-
   width: 50%; /* ← 半分 */
   margin: 0 auto; /* ← 中央寄せ */
 }
@@ -44,7 +48,6 @@
   border-radius: 10px;
   background: white;
   cursor: pointer;
-
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;

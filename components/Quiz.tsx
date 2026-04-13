@@ -2,9 +2,10 @@
 
 import { useEffect, useMemo, useState } from "react";
 import type { QuizItem } from "@/types/quiz";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import remarkBreaks from "remark-breaks";
+import ChapterSelect from "./ChapterSelect";
+import ModeSelect from "./ModeSelect";
+import QuizScreen from "./QuizScreen";
+import ResultScreen from "./ResultScreen";
 import styles from "./Quiz.module.css";
 
 type Screen = "chapter" | "mode" | "quiz" | "result";
@@ -16,13 +17,11 @@ export default function Quiz() {
 
   const [screen, setScreen] = useState<Screen>("chapter");
   const [selectedChapter, setSelectedChapter] = useState<string | null>(null);
-  const [mode, setMode] = useState<Mode | null>(null);
+  // const [mode, setMode] = useState<Mode | null>(null);
 
   const [questions, setQuestions] = useState<QuizItem[]>([]);
   const [index, setIndex] = useState(0);
 
-  const [selected, setSelected] = useState<string[]>([]);
-  const [isAnswered, setIsAnswered] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
 
   const [wrongQuestions, setWrongQuestions] = useState<QuizItem[]>([]);
@@ -57,258 +56,117 @@ export default function Quiz() {
       list = [...filtered].sort(() => Math.random() - 0.5);
     }
 
-    setMode(m);
+    // setMode(m);
     setQuestions(list);
     setIndex(0);
-    setSelected([]);
-    setIsAnswered(false);
     setCorrectCount(0);
     setWrongQuestions([]);
     setScreen("quiz");
   };
 
-  if (loading) return <p className={styles.container}>Loading...</p>;
+  const handleSelectChapter = (chapter: string) => {
+    setSelectedChapter(chapter);
+    setScreen("mode");
+  };
 
-  // --- 章選択 ---
-  if (screen === "chapter") {
-    return (
-      <div className={styles.container}>
-        <h1 className={styles.title}>章を選択</h1>
-        <div className={styles.grid}>
-          {chapters.map((chapter) => (
-            <button
-              key={chapter}
-              className={styles.button}
-              onClick={() => {
-                setSelectedChapter(chapter);
-                setScreen("mode");
-              }}
-            >
-              {chapter}
-            </button>
-          ))}
-        </div>
-      </div>
-    );
-  }
+  const handleBackToChapter = () => {
+    setSelectedChapter(null);
+    setScreen("chapter");
+  };
 
-  // --- モード選択 ---
-  if (screen === "mode") {
-    return (
-      <div className={styles.container}>
-        <h1 className={styles.title}>モード選択</h1>
-        <p className={styles.subtitle}>章: {selectedChapter}</p>
+  const handleNextQuestion = () => {
+    if (index + 1 < questions.length) {
+      setIndex(index + 1);
+    } else {
+      setScreen("result");
+    }
+  };
 
-        <div className={styles.row}>
-          <button
-            className={styles.button}
-            onClick={() => startQuiz("sequential")}
-          >
-            順番に出題
-          </button>
+  const handleCorrect = () => {
+    setCorrectCount((c) => c + 1);
+  };
 
-          <button className={styles.button} onClick={() => startQuiz("random")}>
-            ランダムに出題
-          </button>
-        </div>
+  const handleWrong = (question: QuizItem) => {
+    setWrongQuestions((prev) => {
+      const exists = prev.some(
+        (item) =>
+          item.chapter === question.chapter &&
+          item.questionNumber === question.questionNumber,
+      );
 
-        <button
-          className={styles.linkButton}
-          onClick={() => {
-            setSelectedChapter(null);
-            setScreen("chapter");
-          }}
-        >
-          ← 章選択に戻る
-        </button>
-      </div>
-    );
-  }
-
-  // --- クイズ画面（今は「表示だけ」） ---
-  // --- クイズ画面 ---
-  if (screen === "quiz") {
-    const q = questions[index];
-    if (!q) return null;
-
-    const isSingleAnswer = q.answer.length === 1;
-
-    // 並び順の違いを無視して一致判定する
-    const normalize = (arr: string[]) => [...arr].sort();
-
-    const isCorrect = isSingleAnswer
-      ? selected[0] === (q.answer[0] ?? "")
-      : normalize(selected).join("|") === normalize(q.answer).join("|");
-
-    const handleAnswer = () => {
-      if (selected.length === 0) return;
-
-      setIsAnswered(true);
-
-      if (isCorrect) {
-        setCorrectCount((c) => c + 1);
-      } else {
-        setWrongQuestions((prev) => [...prev, q]);
-      }
-    };
-
-    const handleChoiceClick = (choice: string) => {
-      if (isAnswered) return;
-
-      if (isSingleAnswer) {
-        // 択一問題はクリックした瞬間に採点
-        setSelected([choice]);
-        setIsAnswered(true);
-
-        if (choice === (q.answer[0] ?? "")) {
-          setCorrectCount((c) => c + 1);
-        } else {
-          setWrongQuestions((prev) => [...prev, q]);
-        }
-      } else {
-        // 複数選択問題は従来通りトグル
-        setSelected((prev) => {
-          if (prev.includes(choice)) {
-            return prev.filter((c) => c !== choice);
-          }
-          return [...prev, choice];
-        });
-      }
-    };
-
-    const handleNext = () => {
-      setSelected([]);
-      setIsAnswered(false);
-
-      if (index + 1 < questions.length) {
-        setIndex(index + 1);
-      } else {
-        setScreen("result");
-      }
-    };
-
-    return (
-      <div className={styles.container}>
-        <div className={styles.topBar}>
-          <span>
-            {index + 1} / {questions.length}
-          </span>
-        </div>
-
-        <div className={styles.question}>
-          <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
-            {q.question}
-          </ReactMarkdown>
-        </div>
-
-        {!isSingleAnswer && (
-          <p className={styles.hint}>※ 複数選択可（クリックで選択/解除）</p>
-        )}
-
-        <ul className={styles.choiceList}>
-          {q.choices.map((c) => {
-            const isSelected = selected.includes(c);
-
-            const isAnswerChoice = q.answer.includes(c);
-            const isWrongSelected = isAnswered && isSelected && !isAnswerChoice;
-
-            const className = [
-              styles.choiceItem,
-              !isAnswered && isSelected ? styles.selected : "",
-              isAnswered ? styles.disabled : "",
-              isAnswered && isAnswerChoice ? styles.correctChoice : "",
-              isWrongSelected ? styles.wrongChoice : "",
-            ]
-              .filter(Boolean)
-              .join(" ");
-
-            return (
-              <li
-                key={c}
-                className={className}
-                onClick={() => handleChoiceClick(c)}
-              >
-                {c}
-              </li>
-            );
-          })}
-        </ul>
-
-        {!isSingleAnswer && !isAnswered && (
-          <button
-            className={styles.button}
-            onClick={handleAnswer}
-            disabled={selected.length === 0}
-          >
-            回答する
-          </button>
-        )}
-
-        {isAnswered && (
-          <>
-            <p className={isCorrect ? styles.correct : styles.wrong}>
-              {isCorrect ? "正解！" : "不正解"}
-            </p>
-
-            <p className={styles.answerLine}>正解：{q.answer.join(" / ")}</p>
-
-            <div className={styles.explanation}>
-              <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
-                {q.explanation}
-              </ReactMarkdown>
-            </div>
-
-            <button className={styles.button} onClick={handleNext}>
-              次へ
-            </button>
-          </>
-        )}
-      </div>
-    );
-  }
+      return exists ? prev : [...prev, question];
+    });
+  };
 
   const startReviewWrongQuestions = () => {
     if (wrongQuestions.length === 0) return;
 
     setQuestions(wrongQuestions);
     setIndex(0);
-    setSelected([]);
-    setIsAnswered(false);
     setCorrectCount(0);
+    setWrongQuestions([]);
     setScreen("quiz");
   };
 
-  // --- 結果画面 ---
-  if (screen === "result") {
+  const handleRestart = () => {
+    setScreen("chapter");
+    setSelectedChapter(null);
+    setCorrectCount(0);
+    setIndex(0);
+    setWrongQuestions([]);
+    setQuestions([]);
+  };
+
+  if (loading) return <p className={styles.container}>Loading...</p>;
+
+  if (screen === "chapter") {
     return (
-      <div className={styles.container}>
-        <h1>結果</h1>
-        <p>
-          正解数: {correctCount} / {questions.length}
-        </p>
-
-        <p>不正解数: {wrongQuestions.length}</p>
-
-        {wrongQuestions.length > 0 && (
-          <button className={styles.button} onClick={startReviewWrongQuestions}>
-            間違った問題を復習する
-          </button>
-        )}
-
-        <button
-          className={styles.button}
-          onClick={() => {
-            setScreen("chapter");
-            setCorrectCount(0);
-            setSelected([]);
-            setIndex(0);
-            setIsAnswered(false);
-            setWrongQuestions([]);
-          }}
-        >
-          最初からやり直す
-        </button>
-      </div>
+      <ChapterSelect
+        chapters={chapters}
+        onSelectChapter={handleSelectChapter}
+      />
     );
   }
+
+  if (screen === "mode") {
+    return (
+      <ModeSelect
+        selectedChapter={selectedChapter!}
+        onStartQuiz={startQuiz}
+        onBack={handleBackToChapter}
+      />
+    );
+  }
+
+  if (screen === "quiz") {
+    const currentQuestion = questions[index];
+    return (
+      <QuizScreen
+        key={
+          currentQuestion
+            ? `${currentQuestion.chapter}-${currentQuestion.questionNumber}`
+            : `quiz-${index}`
+        }
+        questions={questions}
+        index={index}
+        onNext={handleNextQuestion}
+        onCorrect={handleCorrect}
+        onWrong={handleWrong}
+      />
+    );
+  }
+
+  if (screen === "result") {
+    return (
+      <ResultScreen
+        correctCount={correctCount}
+        totalQuestions={questions.length}
+        wrongQuestions={wrongQuestions}
+        onReviewWrong={startReviewWrongQuestions}
+        onRestart={handleRestart}
+      />
+    );
+  }
+
+  return null;
 }
