@@ -25,6 +25,8 @@ export default function Quiz() {
   const [isAnswered, setIsAnswered] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
 
+  const [wrongQuestions, setWrongQuestions] = useState<QuizItem[]>([]);
+
   useEffect(() => {
     (async () => {
       try {
@@ -58,6 +60,10 @@ export default function Quiz() {
     setMode(m);
     setQuestions(list);
     setIndex(0);
+    setSelected([]);
+    setIsAnswered(false);
+    setCorrectCount(0);
+    setWrongQuestions([]);
     setScreen("quiz");
   };
 
@@ -135,14 +141,16 @@ export default function Quiz() {
       : normalize(selected).join("|") === normalize(q.answer).join("|");
 
     const handleAnswer = () => {
-    if (selected.length === 0) return;
+      if (selected.length === 0) return;
 
-    setIsAnswered(true);
+      setIsAnswered(true);
 
-    if (isCorrect) {
-      setCorrectCount((c) => c + 1);
-    }
-  };
+      if (isCorrect) {
+        setCorrectCount((c) => c + 1);
+      } else {
+        setWrongQuestions((prev) => [...prev, q]);
+      }
+    };
 
     const handleChoiceClick = (choice: string) => {
       if (isAnswered) return;
@@ -154,6 +162,8 @@ export default function Quiz() {
 
         if (choice === (q.answer[0] ?? "")) {
           setCorrectCount((c) => c + 1);
+        } else {
+          setWrongQuestions((prev) => [...prev, q]);
         }
       } else {
         // 複数選択問題は従来通りトグル
@@ -257,6 +267,17 @@ export default function Quiz() {
     );
   }
 
+  const startReviewWrongQuestions = () => {
+    if (wrongQuestions.length === 0) return;
+
+    setQuestions(wrongQuestions);
+    setIndex(0);
+    setSelected([]);
+    setIsAnswered(false);
+    setCorrectCount(0);
+    setScreen("quiz");
+  };
+
   // --- 結果画面 ---
   if (screen === "result") {
     return (
@@ -266,6 +287,14 @@ export default function Quiz() {
           正解数: {correctCount} / {questions.length}
         </p>
 
+        <p>不正解数: {wrongQuestions.length}</p>
+
+        {wrongQuestions.length > 0 && (
+          <button className={styles.button} onClick={startReviewWrongQuestions}>
+            間違った問題を復習する
+          </button>
+        )}
+
         <button
           className={styles.button}
           onClick={() => {
@@ -273,9 +302,11 @@ export default function Quiz() {
             setCorrectCount(0);
             setSelected([]);
             setIndex(0);
+            setIsAnswered(false);
+            setWrongQuestions([]);
           }}
         >
-          もう一度最初から
+          最初からやり直す
         </button>
       </div>
     );
