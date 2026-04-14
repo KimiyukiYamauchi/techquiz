@@ -43,13 +43,19 @@ export default function Quiz() {
   }, []);
 
   const chapters = useMemo(() => {
-    return Array.from(new Set(data.map((item) => item.chapter)));
+    const uniqueChapters = Array.from(
+      new Set(data.map((item) => item.chapter)),
+    );
+    return [...uniqueChapters, "すべての問題"];
   }, [data]);
 
   const startQuiz = (m: Mode) => {
     if (!selectedChapter) return;
 
-    const filtered = data.filter((q) => q.chapter === selectedChapter);
+    const filtered =
+      selectedChapter === "すべての問題"
+        ? data
+        : data.filter((q) => q.chapter === selectedChapter);
 
     let list = filtered;
     if (m === "random") {
