@@ -64,9 +64,8 @@
   border-radius: 10px;
   background: white;
   cursor: pointer;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal; /* 長い章名も折り返して全文表示 */
+  overflow-wrap: anywhere;
 }
 
 .button:hover {
