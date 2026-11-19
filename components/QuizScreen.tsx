@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState, type KeyboardEvent } from "react";
 import type { QuizItem } from "@/types/quiz";
 import { isCorrectAnswer } from "@/lib/grading";
 import Markdown from "./Markdown";
@@ -29,7 +29,20 @@ export default function QuizScreen({
   // 複数選択問題で「回答する」を押す前の選択
   const [pending, setPending] = useState<string[]>([]);
 
+  // 回答した直後に「次へ」へフォーカスを移す（キーボードだけで次の問題へ進めるように）
+  // リロードで回答済みの状態が復元されたときは移さない
+  const nextButtonRef = useRef<HTMLButtonElement>(null);
+  const shouldFocusNext = useRef(false);
+
   const isAnswered = answer !== null;
+
+  useEffect(() => {
+    if (isAnswered && shouldFocusNext.current) {
+      shouldFocusNext.current = false;
+      // 解説を読む前に画面がスクロールしてしまわないようにする
+      nextButtonRef.current?.focus({ preventScroll: true });
+    }
+  }, [isAnswered]);
   const selected = answer ?? pending;
   const isSingleAnswer = q.answer.length === 1;
   const isCorrect = isAnswered && isCorrectAnswer(q, answer);
@@ -40,6 +53,7 @@ export default function QuizScreen({
 
     if (isSingleAnswer) {
       // 択一問題はクリックした瞬間に採点
+      shouldFocusNext.current = true;
       onAnswer([choiceId]);
     } else {
       // 複数選択問題はトグル
@@ -53,7 +67,19 @@ export default function QuizScreen({
 
   const handleAnswer = () => {
     if (pending.length === 0) return;
+    shouldFocusNext.current = true;
     onAnswer(pending);
+  };
+
+  // Space / Enter キーでも選択できるようにする（押しっぱなしの連続入力は無視）
+  const handleChoiceKeyDown = (
+    e: KeyboardEvent<HTMLLIElement>,
+    choiceId: string,
+  ) => {
+    if (e.key !== " " && e.key !== "Enter") return;
+    e.preventDefault(); // Space で画面がスクロールしないようにする
+    if (e.repeat) return;
+    handleChoiceClick(choiceId);
   };
 
   const handleQuit = () => {
@@ -88,10 +114,18 @@ export default function QuizScreen({
       </div>
 
       {!isSingleAnswer && (
-        <p className={styles.hint}>※ 複数選択可（クリックで選択/解除）</p>
+        <p className={styles.hint}>
+          ※ 複数選択可（クリックまたは Space キーで選択/解除）
+        </p>
       )}
 
-      <ul className={styles.choiceList}>
+      {/* 選択肢は Markdown（段落・コードブロックなど）を含むため <button> にはできない。
+          role で択一はラジオボタン、複数選択はチェックボックスとして扱わせる */}
+      <ul
+        className={styles.choiceList}
+        role={isSingleAnswer ? "radiogroup" : "group"}
+        aria-label="選択肢"
+      >
         {q.choices.map((c) => {
           const isSelected = selected.includes(c.id);
 
@@ -112,7 +146,12 @@ export default function QuizScreen({
             <li
               key={c.id}
               className={className}
+              role={isSingleAnswer ? "radio" : "checkbox"}
+              aria-checked={isSelected}
+              aria-disabled={isAnswered || undefined}
+              tabIndex={0}
               onClick={() => handleChoiceClick(c.id)}
+              onKeyDown={(e) => handleChoiceKeyDown(e, c.id)}
             >
               <Markdown>{c.text}</Markdown>
             </li>
@@ -150,7 +189,11 @@ export default function QuizScreen({
             <Markdown>{q.explanation}</Markdown>
           </div>
 
-          <button className={styles.button} onClick={onNext}>
+          <button
+            ref={nextButtonRef}
+            className={styles.button}
+            onClick={onNext}
+          >
             次へ
           </button>
         </>
