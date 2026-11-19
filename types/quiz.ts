@@ -4,6 +4,7 @@ export type QuizChoice = {
 };
 
 export type QuizItem = {
+  id: string; // 問題の識別子（microCMS のコンテンツ ID）
   chapter: string;
   questionNumber: string;
   question: string;

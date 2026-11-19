@@ -39,7 +39,7 @@ export default function ResultScreen({
 
           <ul className={styles.wrongList}>
             {wrongQuestions.map((q) => (
-              <li key={`${q.chapter}-${q.questionNumber}`}>
+              <li key={q.id}>
                 {q.chapter} - {q.questionNumber}
               </li>
             ))}
