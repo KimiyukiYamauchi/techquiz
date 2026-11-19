@@ -197,15 +197,45 @@
 }
 
 .question ul,
-.explanation ul {
+.explanation ul,
+.choiceItem ul {
   padding-left: 20px;
 }
 
 .question code,
-.explanation code {
+.explanation code,
+.choiceItem code,
+.answerLine code {
   background: #eee;
   padding: 2px 4px;
   border-radius: 4px;
+}
+
+/* 選択肢の上下に段落の余白がつかないようにする */
+.choiceItem > :first-child {
+  margin-top: 0;
+}
+
+.choiceItem > :last-child {
+  margin-bottom: 0;
+}
+
+/* コードブロックは折り返さず、はみ出す分は横スクロール */
+.question pre,
+.explanation pre,
+.choiceItem pre,
+.answerLine pre {
+  overflow-x: auto;
+  padding: 8px 10px;
+  background: #eee;
+  border-radius: 6px;
+}
+
+.question pre code,
+.explanation pre code,
+.choiceItem pre code,
+.answerLine pre code {
+  padding: 0;
 }
 
 .question table {

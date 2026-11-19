@@ -53,7 +53,7 @@ export default function ResultScreen({
                 </div>
                 <div>{markdownExcerpt(q.question)}</div>
                 <div className={styles.wrongAnswer}>
-                  正解：{correctAnswerText(q)}
+                  正解：{markdownExcerpt(correctAnswerText(q), 80)}
                 </div>
               </li>
             ))}

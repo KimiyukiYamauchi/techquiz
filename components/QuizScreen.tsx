@@ -2,10 +2,8 @@
 
 import { useState } from "react";
 import type { QuizItem } from "@/types/quiz";
-import { correctAnswerText, isCorrectAnswer } from "@/lib/grading";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import remarkBreaks from "remark-breaks";
+import { isCorrectAnswer } from "@/lib/grading";
+import Markdown from "./Markdown";
 import styles from "./Quiz.module.css";
 
 interface QuizScreenProps {
@@ -68,7 +66,7 @@ export default function QuizScreen({
     }
   };
 
-  const answerText = correctAnswerText(q);
+  const answerChoices = q.choices.filter((c) => q.answer.includes(c.id));
 
   return (
     <div className={styles.container}>
@@ -86,9 +84,7 @@ export default function QuizScreen({
       </div>
 
       <div className={styles.question}>
-        <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
-          {q.question}
-        </ReactMarkdown>
+        <Markdown>{q.question}</Markdown>
       </div>
 
       {!isSingleAnswer && (
@@ -118,7 +114,7 @@ export default function QuizScreen({
               className={className}
               onClick={() => handleChoiceClick(c.id)}
             >
-              {c.text}
+              <Markdown>{c.text}</Markdown>
             </li>
           );
         })}
@@ -140,12 +136,18 @@ export default function QuizScreen({
             {isCorrect ? "正解！" : "不正解"}
           </p>
 
-          <p className={styles.answerLine}>正解：{answerText}</p>
+          <div className={styles.answerLine}>
+            正解：
+            {answerChoices.map((c, i) => (
+              <span key={c.id}>
+                {i > 0 && " / "}
+                <Markdown inline>{c.text}</Markdown>
+              </span>
+            ))}
+          </div>
 
           <div className={styles.explanation}>
-            <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>
-              {q.explanation}
-            </ReactMarkdown>
+            <Markdown>{q.explanation}</Markdown>
           </div>
 
           <button className={styles.button} onClick={onNext}>
