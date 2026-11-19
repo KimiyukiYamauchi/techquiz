@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import type { QuizItem } from "@/types/quiz";
 import ChapterSelect from "./ChapterSelect";
 import ModeSelect from "./ModeSelect";
@@ -11,10 +11,11 @@ import styles from "./Quiz.module.css";
 type Screen = "chapter" | "mode" | "quiz" | "result";
 type Mode = "sequential" | "random";
 
-export default function Quiz() {
-  const [data, setData] = useState<QuizItem[]>([]);
-  const [loading, setLoading] = useState(true);
+interface QuizProps {
+  data: QuizItem[]; // microCMS から取得した問題（app/page.tsx で取得）
+}
 
+export default function Quiz({ data }: QuizProps) {
   const [screen, setScreen] = useState<Screen>("chapter");
   const [selectedChapter, setSelectedChapter] = useState<string | null>(null);
   // const [mode, setMode] = useState<Mode | null>(null);
@@ -25,22 +26,6 @@ export default function Quiz() {
   const [correctCount, setCorrectCount] = useState(0);
 
   const [wrongQuestions, setWrongQuestions] = useState<QuizItem[]>([]);
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await fetch("/quiz2.json");
-        if (!res.ok) throw new Error("Failed to load quiz2.json");
-        const json = (await res.json()) as QuizItem[];
-        setData(json);
-      } catch (e) {
-        console.error(e);
-        alert("クイズデータの取得に失敗しました");
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, []);
 
   const chapters = useMemo(() => {
     const uniqueChapters = Array.from(
@@ -123,7 +108,8 @@ export default function Quiz() {
     setQuestions([]);
   };
 
-  if (loading) return <p className={styles.container}>Loading...</p>;
+  if (data.length === 0)
+    return <p className={styles.container}>問題がまだ登録されていません。</p>;
 
   if (screen === "chapter") {
     return (
