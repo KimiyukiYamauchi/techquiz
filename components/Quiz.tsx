@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { QuizItem } from "@/types/quiz";
+import { shuffle } from "@/lib/shuffle";
 import ChapterSelect from "./ChapterSelect";
 import ModeSelect from "./ModeSelect";
 import QuizScreen from "./QuizScreen";
@@ -42,10 +43,7 @@ export default function Quiz({ data }: QuizProps) {
         ? data
         : data.filter((q) => q.chapter === selectedChapter);
 
-    let list = filtered;
-    if (m === "random") {
-      list = [...filtered].sort(() => Math.random() - 0.5);
-    }
+    const list = m === "random" ? shuffle(filtered) : filtered;
 
     // setMode(m);
     setQuestions(list);
