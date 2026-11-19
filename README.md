@@ -69,7 +69,7 @@ techquiz/
 
 ## 📄 クイズデータ形式
 
-画面では次の形式（`types/quiz.ts` の `QuizItem`）で扱います。microCMS のデータは `lib/microcms.ts` でこの形式に変換されます。
+JSON で問題を書くときは次の形式を使います（`scripts/json_to_microcms_csv.py` の入力形式）。`answer` には正解の選択肢の本文を書きます。
 
 ```JSON
 {
@@ -81,6 +81,20 @@ techquiz/
   "explanation": "```javascript\nconsole.log(1 + 2); // 3\n```"
 }
 ```
+
+画面側（`types/quiz.ts` の `QuizItem`）では、選択肢と正解を選択肢 ID（microCMS の `selectId`）で扱います。本文が同じ選択肢があっても正しく判定するためです。変換は `lib/microcms.ts` で行います。
+
+```JSON
+{
+  "choices": [{ "id": "a", "text": "1" }, { "id": "b", "text": "2" }, { "id": "c", "text": "3" }, { "id": "d", "text": "4" }],
+  "answer": ["c"]
+}
+```
+
+次のような入力ミスがある問題は出題から除外し、サーバーログに `[microCMS] 問題 <コンテンツID> ...` の警告を出します（Vercel では Logs で確認できます）。
+
+- 選択肢がない、`selectId` が空、または重複している
+- 正解（`answerId`）が登録されていない、または選択肢にない ID を指している
 
 ## ▶️ 開発環境のセットアップ
 
