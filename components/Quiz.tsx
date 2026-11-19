@@ -79,11 +79,7 @@ export default function Quiz({ data }: QuizProps) {
 
   const handleWrong = (question: QuizItem) => {
     setWrongQuestions((prev) => {
-      const exists = prev.some(
-        (item) =>
-          item.chapter === question.chapter &&
-          item.questionNumber === question.questionNumber,
-      );
+      const exists = prev.some((item) => item.id === question.id);
 
       return exists ? prev : [...prev, question];
     });
@@ -134,11 +130,7 @@ export default function Quiz({ data }: QuizProps) {
     const currentQuestion = questions[index];
     return (
       <QuizScreen
-        key={
-          currentQuestion
-            ? `${currentQuestion.chapter}-${currentQuestion.questionNumber}`
-            : `quiz-${index}`
-        }
+        key={currentQuestion ? currentQuestion.id : `quiz-${index}`}
         questions={questions}
         index={index}
         onNext={handleNextQuestion}

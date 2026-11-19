@@ -135,7 +135,7 @@ Vercel では Project Settings → Environment Variables に同じ値を登録�
 - `choice` … `selectId`（テキストフィールド）, `text`（テキストエリア）
 - `answerId` … `answerId`（テキストフィールド）
 
-問題は「章 → questionNumber」の順に並べて表示します。更新は最大 60 秒で反映されます。
+問題は「章 → questionNumber」の順に並べて表示します。`questionNumber` が空の問題は、その章の最後に登録順で並び、章内の最大番号の続き（1, 2, 5 が登録済みなら 6, 7, …）が振られます。更新は最大 60 秒で反映されます。
 
 ### JSON から問題を一括登録する
 

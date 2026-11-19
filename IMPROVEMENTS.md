@@ -28,7 +28,7 @@
 - [x] 🔴 microCMS の `answerId` が選択肢と一致しないと `answer` が空配列になる（[microcms.ts:43-49](lib/microcms.ts#L43-L49)）
   - 空のときは `isSingleAnswer` が false になり、複数選択の問題として扱われて、絶対に正解できなくなる
   - 変換時に警告ログを出すかその問題を除外する。管理画面での入力ミスにも気づけるようにする
-- [ ] 🟡 `questionNumber` が無いときの補完値 `index + 1` が全問題の通し番号になる（[microcms.ts:52](lib/microcms.ts#L52)）
+- [x] 🟡 `questionNumber` が無いときの補完値 `index + 1` が全問題の通し番号になる（[microcms.ts:52](lib/microcms.ts#L52)）
   - 章内の番号と重複しうるため、`${chapter}-${questionNumber}` の key や、間違えた問題の重複判定（[Quiz.tsx:82-86](components/Quiz.tsx#L82-L86)）が衝突する → microCMS の `id` を `QuizItem` に持たせて識別子にする
 - [ ] 🟡 ランダム出題の `sort(() => Math.random() - 0.5)` は偏りが出る（[Quiz.tsx:47](components/Quiz.tsx#L47)）→ Fisher–Yates シャッフルにする
 - [ ] 🟡 `totalQuestions` が 0 のとき正答率が `NaN%` になる（[ResultScreen.tsx:21](components/ResultScreen.tsx#L21)）

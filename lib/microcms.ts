@@ -38,7 +38,13 @@ const toLetter = (s: string) => (s || "").trim().toLowerCase();
 
 // microCMS の形式 → 画面で使う QuizItem の形式（選択肢・正解は選択肢 ID で持つ）
 // 入力ミスで正しく出題できない問題は null を返し、サーバーログに理由を出す
-function toQuizItem(q: CmsQuestion, index: number): QuizItem | null {
+// questionNumber はここでは決めず、章ごとに並べた後で numberWithinChapters が振る
+type ConvertedItem = {
+  item: Omit<QuizItem, "questionNumber">;
+  number?: number; // microCMS に登録された問題番号（無ければ undefined）
+};
+
+function toQuizItem(q: CmsQuestion): ConvertedItem | null {
   const label = `[microCMS] 問題 ${q.id}（${q.chapter ?? "章なし"} - ${q.questionNumber ?? "番号なし"}）`;
 
   const choices = (q.choices ?? []).map((c) => ({
@@ -75,13 +81,54 @@ function toQuizItem(q: CmsQuestion, index: number): QuizItem | null {
   }
 
   return {
-    chapter: q.chapter ?? "",
-    questionNumber: String(q.questionNumber ?? index + 1),
-    question: q.text ?? "",
-    choices,
-    answer: answerIds,
-    explanation: q.explanation ?? "",
+    item: {
+      id: q.id,
+      chapter: q.chapter ?? "",
+      question: q.text ?? "",
+      choices,
+      answer: answerIds,
+      explanation: q.explanation ?? "",
+    },
+    number:
+      typeof q.questionNumber === "number" && Number.isFinite(q.questionNumber)
+        ? q.questionNumber
+        : undefined,
   };
+}
+
+// 章 → 問題番号の順に並べ、番号が無い問題には章内の続き番号を振る
+// （例: 1, 2, 5 が登録済みの章なら、番号の無い問題は登録順に 6, 7, …）
+function numberWithinChapters(converted: ConvertedItem[]): QuizItem[] {
+  // 番号ありを先に番号順、番号なしは後ろに登録順のまま（sort は安定ソート）
+  const compareNumber = (a?: number, b?: number) => {
+    if (a === undefined) return b === undefined ? 0 : 1;
+    if (b === undefined) return -1;
+    return a - b;
+  };
+  const sorted = [...converted].sort(
+    (a, b) =>
+      a.item.chapter.localeCompare(b.item.chapter, "ja", { numeric: true }) ||
+      compareNumber(a.number, b.number),
+  );
+
+  const maxByChapter = new Map<string, number>();
+  for (const { item, number } of sorted) {
+    if (number !== undefined) {
+      maxByChapter.set(
+        item.chapter,
+        Math.max(maxByChapter.get(item.chapter) ?? 0, number),
+      );
+    }
+  }
+
+  return sorted.map(({ item, number }) => {
+    if (number !== undefined) {
+      return { ...item, questionNumber: String(number) };
+    }
+    const next = (maxByChapter.get(item.chapter) ?? 0) + 1;
+    maxByChapter.set(item.chapter, next);
+    return { ...item, questionNumber: String(next) };
+  });
 }
 
 // 全問題を取得し、章（「第2章」が「第10章」より前）→ 問題番号の順に並べる
@@ -96,12 +143,9 @@ export async function getAllQuizItems(): Promise<QuizItem[]> {
     customRequestInit: { next: { revalidate: REVALIDATE_SECONDS } },
   });
 
-  return contents
-    .map(toQuizItem)
-    .filter((item): item is QuizItem => item !== null)
-    .sort(
-      (a, b) =>
-        a.chapter.localeCompare(b.chapter, "ja", { numeric: true }) ||
-        Number(a.questionNumber) - Number(b.questionNumber),
-    );
+  return numberWithinChapters(
+    contents
+      .map(toQuizItem)
+      .filter((c): c is ConvertedItem => c !== null),
+  );
 }
