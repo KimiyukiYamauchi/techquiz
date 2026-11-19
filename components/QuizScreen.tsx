@@ -169,22 +169,31 @@ export default function QuizScreen({
         </button>
       )}
 
+      {/* 採点結果をスクリーンリーダーで読み上げる。
+          ライブリージョンは中身が変わる前から存在している必要があるので、
+          枠は常に出しておき、回答したときに中身を入れる */}
+      <div role="status" aria-live="polite" aria-atomic="true">
+        {isAnswered && (
+          <>
+            <p className={isCorrect ? styles.correct : styles.wrong}>
+              {isCorrect ? "正解！" : "不正解"}
+            </p>
+
+            <div className={styles.answerLine}>
+              正解：
+              {answerChoices.map((c, i) => (
+                <span key={c.id}>
+                  {i > 0 && " / "}
+                  <Markdown inline>{c.text}</Markdown>
+                </span>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+
       {isAnswered && (
         <>
-          <p className={isCorrect ? styles.correct : styles.wrong}>
-            {isCorrect ? "正解！" : "不正解"}
-          </p>
-
-          <div className={styles.answerLine}>
-            正解：
-            {answerChoices.map((c, i) => (
-              <span key={c.id}>
-                {i > 0 && " / "}
-                <Markdown inline>{c.text}</Markdown>
-              </span>
-            ))}
-          </div>
-
           <div className={styles.explanation}>
             <Markdown>{q.explanation}</Markdown>
           </div>
