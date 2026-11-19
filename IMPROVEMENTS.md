@@ -53,7 +53,8 @@
 
 ## 4. アクセシビリティ
 
-- [ ] 🟡 選択肢が `<li onClick>` のため、キーボードで操作できない → `<button>` か、`role="checkbox"` / `role="radio"` に置き換える
+- [x] 🟡 選択肢が `<li onClick>` のため、キーボードで操作できない → `<button>` か、`role="checkbox"` / `role="radio"` に置き換える
+  - → 選択肢は Markdown のブロック要素を含むので `<button>` ではなく `role="radio"` / `role="checkbox"` にした。Tab で移動、Space / Enter で選択でき、回答後は「次へ」にフォーカスが移る
 - [ ] 🟡 正解・不正解の結果を `aria-live` で読み上げる
 - [ ] 🟡 `<html lang="en">` を `lang="ja"` にする（[layout.tsx:27](app/layout.tsx#L27)）
 - [ ] 🟢 数字キー（1〜4）で回答し、Enter で次へ進めるショートカットを追加する
