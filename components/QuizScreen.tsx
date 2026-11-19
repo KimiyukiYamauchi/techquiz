@@ -49,15 +49,16 @@ export default function QuizScreen({
     }
   };
 
-  const handleChoiceClick = (choice: string) => {
+  // choiceId は選択肢の ID（本文が同じ選択肢があっても区別できる）
+  const handleChoiceClick = (choiceId: string) => {
     if (isAnswered) return;
 
     if (isSingleAnswer) {
       // 択一問題はクリックした瞬間に採点
-      setSelected([choice]);
+      setSelected([choiceId]);
       setIsAnswered(true);
 
-      if (choice === (q.answer[0] ?? "")) {
+      if (choiceId === (q.answer[0] ?? "")) {
         onCorrect();
       } else {
         onWrong(q);
@@ -65,13 +66,18 @@ export default function QuizScreen({
     } else {
       // 複数選択問題は従来通りトグル
       setSelected((prev) => {
-        if (prev.includes(choice)) {
-          return prev.filter((c) => c !== choice);
+        if (prev.includes(choiceId)) {
+          return prev.filter((id) => id !== choiceId);
         }
-        return [...prev, choice];
+        return [...prev, choiceId];
       });
     }
   };
+
+  const answerText = q.choices
+    .filter((c) => q.answer.includes(c.id))
+    .map((c) => c.text)
+    .join(" / ");
 
   return (
     <div className={styles.container}>
@@ -93,9 +99,9 @@ export default function QuizScreen({
 
       <ul className={styles.choiceList}>
         {q.choices.map((c) => {
-          const isSelected = selected.includes(c);
+          const isSelected = selected.includes(c.id);
 
-          const isAnswerChoice = q.answer.includes(c);
+          const isAnswerChoice = q.answer.includes(c.id);
           const isWrongSelected = isAnswered && isSelected && !isAnswerChoice;
 
           const className = [
@@ -110,11 +116,11 @@ export default function QuizScreen({
 
           return (
             <li
-              key={c}
+              key={c.id}
               className={className}
-              onClick={() => handleChoiceClick(c)}
+              onClick={() => handleChoiceClick(c.id)}
             >
-              {c}
+              {c.text}
             </li>
           );
         })}
@@ -136,7 +142,7 @@ export default function QuizScreen({
             {isCorrect ? "正解！" : "不正解"}
           </p>
 
-          <p className={styles.answerLine}>正解：{q.answer.join(" / ")}</p>
+          <p className={styles.answerLine}>正解：{answerText}</p>
 
           <div className={styles.explanation}>
             <ReactMarkdown remarkPlugins={[remarkGfm, remarkBreaks]}>

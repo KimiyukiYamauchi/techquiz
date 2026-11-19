@@ -36,23 +36,50 @@ type CmsQuestion = {
 
 const toLetter = (s: string) => (s || "").trim().toLowerCase();
 
-// microCMS の形式 → 画面で使う QuizItem の形式（選択肢・正解は本文の配列）
-function toQuizItem(q: CmsQuestion, index: number): QuizItem {
-  const choices = q.choices ?? [];
-  const textById = new Map(choices.map((c) => [toLetter(c.selectId), c.text]));
-  const answer = Array.from(
-    new Set(
-      (q.answerId ?? [])
-        .map((a) => textById.get(toLetter(a.answerId)))
-        .filter((t): t is string => t !== undefined),
-    ),
+// microCMS の形式 → 画面で使う QuizItem の形式（選択肢・正解は選択肢 ID で持つ）
+// 入力ミスで正しく出題できない問題は null を返し、サーバーログに理由を出す
+function toQuizItem(q: CmsQuestion, index: number): QuizItem | null {
+  const label = `[microCMS] 問題 ${q.id}（${q.chapter ?? "章なし"} - ${q.questionNumber ?? "番号なし"}）`;
+
+  const choices = (q.choices ?? []).map((c) => ({
+    id: toLetter(c.selectId),
+    text: c.text ?? "",
+  }));
+  const choiceIds = choices.map((c) => c.id);
+  if (choices.length === 0) {
+    console.warn(`${label}: 選択肢がないため除外しました`);
+    return null;
+  }
+  if (choiceIds.some((id) => id === "")) {
+    console.warn(`${label}: selectId が空の選択肢があるため除外しました`);
+    return null;
+  }
+  if (new Set(choiceIds).size !== choiceIds.length) {
+    console.warn(`${label}: selectId が重複しているため除外しました`);
+    return null;
+  }
+
+  const answerIds = Array.from(
+    new Set((q.answerId ?? []).map((a) => toLetter(a.answerId))),
   );
+  const unknown = answerIds.filter((id) => !choiceIds.includes(id));
+  if (unknown.length > 0) {
+    console.warn(
+      `${label}: 正解 ${unknown.join(", ")} が選択肢にないため除外しました`,
+    );
+    return null;
+  }
+  if (answerIds.length === 0) {
+    console.warn(`${label}: 正解が登録されていないため除外しました`);
+    return null;
+  }
+
   return {
     chapter: q.chapter ?? "",
     questionNumber: String(q.questionNumber ?? index + 1),
     question: q.text ?? "",
-    choices: choices.map((c) => c.text),
-    answer,
+    choices,
+    answer: answerIds,
     explanation: q.explanation ?? "",
   };
 }
@@ -71,6 +98,7 @@ export async function getAllQuizItems(): Promise<QuizItem[]> {
 
   return contents
     .map(toQuizItem)
+    .filter((item): item is QuizItem => item !== null)
     .sort(
       (a, b) =>
         a.chapter.localeCompare(b.chapter, "ja", { numeric: true }) ||
