@@ -13,21 +13,24 @@ export default function ChapterSelect({ scopes }: ChapterSelectProps) {
 
   return (
     <div className={styles.container}>
-      <h1 className={styles.title}>章を選択</h1>
-      <div className={styles.grid}>
-        {scopes.map((scope) => {
-          const label = scopeLabel(scope);
-          return (
-            <button
-              key={scope.id}
-              className={styles.button}
-              onClick={() => router.push(`/chapter/${scope.id}`)}
-              title={label}
-            >
-              {label}
-            </button>
-          );
-        })}
+      {/* タイトルとボタンを同じ幅の枠に入れて、左端をそろえる */}
+      <div className={styles.narrowContainer}>
+        <h1 className={styles.title}>章を選択</h1>
+        <div className={styles.grid}>
+          {scopes.map((scope) => {
+            const label = scopeLabel(scope);
+            return (
+              <button
+                key={scope.id}
+                className={styles.button}
+                onClick={() => router.push(`/chapter/${scope.id}`)}
+                title={label}
+              >
+                {label}
+              </button>
+            );
+          })}
+        </div>
       </div>
     </div>
   );

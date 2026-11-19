@@ -45,8 +45,7 @@
   display: flex;
   flex-direction: column;
   gap: 10px;
-  width: 50%; /* ← 半分 */
-  margin: 0 auto; /* ← 中央寄せ */
+  /* 幅と中央寄せは外側の .narrowContainer に任せる（タイトルと左端をそろえるため） */
 }
 
 .row {
@@ -255,9 +254,6 @@
 }
 
 @media (max-width: 600px) {
-  .grid {
-    width: 90%;
-  }
   .narrowContainer {
     width: 90%;
   }
