@@ -32,7 +32,7 @@
   - 章内の番号と重複しうるため、`${chapter}-${questionNumber}` の key や、間違えた問題の重複判定（[Quiz.tsx:82-86](components/Quiz.tsx#L82-L86)）が衝突する → microCMS の `id` を `QuizItem` に持たせて識別子にする
 - [x] 🟡 ランダム出題の `sort(() => Math.random() - 0.5)` は偏りが出る（[Quiz.tsx:47](components/Quiz.tsx#L47)）→ Fisher–Yates シャッフルにする（`lib/shuffle.ts`）
 - [x] 🟡 `totalQuestions` が 0 のとき正答率が `NaN%` になる（[ResultScreen.tsx:21](components/ResultScreen.tsx#L21)）→ 0 問のときは「-」と表示
-- [ ] 🟡 章名が「すべての問題」と同じだと区別できない（[Quiz.tsx:34](components/Quiz.tsx#L34)）→ 定数化し、内部値は専用の ID にする
+- [x] 🟡 章名が「すべての問題」と同じだと区別できない（[Quiz.tsx:34](components/Quiz.tsx#L34)）→ 定数化し、内部値は専用の ID にする（`lib/quizScope.ts` の `QuizScope` 型）
 - [ ] 🟢 `error.tsx` のコンポーネント名 `Error` が組み込みの `Error` を覆い隠している → `ErrorPage` などに改名し、`error` を `console.error` で記録する（[error.tsx:6](app/error.tsx#L6)）
 
 ## 3. UX・機能

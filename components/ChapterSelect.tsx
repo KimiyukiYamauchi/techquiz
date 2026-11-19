@@ -1,30 +1,34 @@
 "use client";
 
+import { scopeKey, scopeLabel, type QuizScope } from "@/lib/quizScope";
 import styles from "./Quiz.module.css";
 
 interface ChapterSelectProps {
-  chapters: string[];
-  onSelectChapter: (chapter: string) => void;
+  scopes: QuizScope[]; // 各章と「すべての問題」
+  onSelectScope: (scope: QuizScope) => void;
 }
 
 export default function ChapterSelect({
-  chapters,
-  onSelectChapter,
+  scopes,
+  onSelectScope,
 }: ChapterSelectProps) {
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>章を選択</h1>
       <div className={styles.grid}>
-        {chapters.map((chapter) => (
-          <button
-            key={chapter}
-            className={styles.button}
-            onClick={() => onSelectChapter(chapter)}
-            title={chapter}
-          >
-            {chapter}
-          </button>
-        ))}
+        {scopes.map((scope) => {
+          const label = scopeLabel(scope);
+          return (
+            <button
+              key={scopeKey(scope)}
+              className={styles.button}
+              onClick={() => onSelectScope(scope)}
+              title={label}
+            >
+              {label}
+            </button>
+          );
+        })}
       </div>
     </div>
   );

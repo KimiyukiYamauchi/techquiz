@@ -3,6 +3,12 @@
 import { useMemo, useState } from "react";
 import type { QuizItem } from "@/types/quiz";
 import { shuffle } from "@/lib/shuffle";
+import {
+  ALL_QUESTIONS_SCOPE,
+  filterByScope,
+  scopeLabel,
+  type QuizScope,
+} from "@/lib/quizScope";
 import ChapterSelect from "./ChapterSelect";
 import ModeSelect from "./ModeSelect";
 import QuizScreen from "./QuizScreen";
@@ -18,7 +24,7 @@ interface QuizProps {
 
 export default function Quiz({ data }: QuizProps) {
   const [screen, setScreen] = useState<Screen>("chapter");
-  const [selectedChapter, setSelectedChapter] = useState<string | null>(null);
+  const [selectedScope, setSelectedScope] = useState<QuizScope | null>(null);
   // const [mode, setMode] = useState<Mode | null>(null);
 
   const [questions, setQuestions] = useState<QuizItem[]>([]);
@@ -28,20 +34,23 @@ export default function Quiz({ data }: QuizProps) {
 
   const [wrongQuestions, setWrongQuestions] = useState<QuizItem[]>([]);
 
-  const chapters = useMemo(() => {
+  const scopes = useMemo<QuizScope[]>(() => {
     const uniqueChapters = Array.from(
       new Set(data.map((item) => item.chapter)),
     );
-    return [...uniqueChapters, "すべての問題"];
+    return [
+      ...uniqueChapters.map((chapter) => ({
+        type: "chapter" as const,
+        chapter,
+      })),
+      ALL_QUESTIONS_SCOPE,
+    ];
   }, [data]);
 
   const startQuiz = (m: Mode) => {
-    if (!selectedChapter) return;
+    if (!selectedScope) return;
 
-    const filtered =
-      selectedChapter === "すべての問題"
-        ? data
-        : data.filter((q) => q.chapter === selectedChapter);
+    const filtered = filterByScope(data, selectedScope);
 
     const list = m === "random" ? shuffle(filtered) : filtered;
 
@@ -53,13 +62,13 @@ export default function Quiz({ data }: QuizProps) {
     setScreen("quiz");
   };
 
-  const handleSelectChapter = (chapter: string) => {
-    setSelectedChapter(chapter);
+  const handleSelectScope = (scope: QuizScope) => {
+    setSelectedScope(scope);
     setScreen("mode");
   };
 
   const handleBackToChapter = () => {
-    setSelectedChapter(null);
+    setSelectedScope(null);
     setScreen("chapter");
   };
 
@@ -95,7 +104,7 @@ export default function Quiz({ data }: QuizProps) {
 
   const handleRestart = () => {
     setScreen("chapter");
-    setSelectedChapter(null);
+    setSelectedScope(null);
     setCorrectCount(0);
     setIndex(0);
     setWrongQuestions([]);
@@ -106,18 +115,13 @@ export default function Quiz({ data }: QuizProps) {
     return <p className={styles.container}>問題がまだ登録されていません。</p>;
 
   if (screen === "chapter") {
-    return (
-      <ChapterSelect
-        chapters={chapters}
-        onSelectChapter={handleSelectChapter}
-      />
-    );
+    return <ChapterSelect scopes={scopes} onSelectScope={handleSelectScope} />;
   }
 
   if (screen === "mode") {
     return (
       <ModeSelect
-        selectedChapter={selectedChapter!}
+        selectedChapter={scopeLabel(selectedScope!)}
         onStartQuiz={startQuiz}
         onBack={handleBackToChapter}
       />
