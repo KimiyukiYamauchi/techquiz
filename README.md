@@ -24,10 +24,18 @@ Tech+の問題を学習できるクイズアプリです。
 
 ## 🖥️ 画面構成
 
-- 章選択
-- モード選択
-- クイズ画面
-- 結果画面
+| URL                                       | 画面                   |
+| ----------------------------------------- | ---------------------- |
+| `/`                                       | 章選択                 |
+| `/chapter/[id]`                           | モード選択             |
+| `/chapter/[id]/quiz?mode=sequential\|random` | クイズ画面・結果画面   |
+
+- `[id]` は章名の先頭の「第N章」の番号です（例: `第3章 …` → `/chapter/3`）。すべての問題は `/chapter/all` です
+  - 「第N章」で始まらない章や、番号が重複する章は章の一覧に出さず、サーバーログに警告を出します（その章の問題も「すべての問題」には含まれます）
+- ブラウザの戻る・進むで、章選択・モード選択・クイズの間を移動できます
+- クイズの進み具合（出題順・何問目か・回答・正解数・間違えた問題）はブラウザの sessionStorage に保存します。リロードしても続きから再開し、結果画面もそのまま残ります
+  - モード選択から始めたとき・中断したとき・「最初からやり直す」を押したときは、保存した進み具合を消します
+  - タブを閉じると消えます
 
 ## 🛠️ 使用技術
 
@@ -49,16 +57,24 @@ Tech+の問題を学習できるクイズアプリです。
 ```
 techquiz/
 ├── app/
-│   ├── page.tsx        # microCMS から問題を取得して Quiz に渡す
-│   └── error.tsx       # microCMS に接続できないときのエラー画面
+│   ├── page.tsx                    # 章選択（/）
+│   ├── chapter/[id]/page.tsx       # モード選択（/chapter/[id]）
+│   ├── chapter/[id]/quiz/page.tsx  # クイズ・結果（/chapter/[id]/quiz?mode=…）
+│   ├── layout.tsx
+│   └── error.tsx                   # microCMS に接続できないときのエラー画面
 ├── lib/
-│   └── microcms.ts     # microCMS から全問題を取得（サーバー専用）
+│   ├── microcms.ts     # microCMS から全問題を取得（サーバー専用）
+│   ├── quizScope.ts    # 出題範囲（章 / すべての問題）と URL の章 ID
+│   ├── quizSession.ts  # クイズの進み具合を sessionStorage に保存・復元
+│   ├── grading.ts      # 正解判定
+│   └── shuffle.ts      # Fisher–Yates シャッフル
 ├── scripts/
 │   └── json_to_microcms_csv.py  # JSON → microCMS CSV インポート用ファイル
 ├── components/
-│   ├── Quiz.tsx
 │   ├── ChapterSelect.tsx
 │   ├── ModeSelect.tsx
+│   ├── QuizSessionLoader.tsx  # QuizSession をブラウザでだけ読み込む
+│   ├── QuizSession.tsx        # 出題 → 結果 → 復習の進行と保存
 │   ├── QuizScreen.tsx
 │   ├── ResultScreen.tsx
 │   └── Quiz.module.css

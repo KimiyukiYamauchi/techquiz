@@ -2,54 +2,39 @@
 
 import { useState } from "react";
 import type { QuizItem } from "@/types/quiz";
+import { isCorrectAnswer } from "@/lib/grading";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
 import styles from "./Quiz.module.css";
 
 interface QuizScreenProps {
-  questions: QuizItem[];
-  index: number;
+  question: QuizItem;
+  index: number; // 何問目か（0 始まり）
+  total: number; // 出題数
+  // 回答済みならその回答（選択肢 ID）、未回答なら null。親が保存し、リロード後も復元する
+  answer: string[] | null;
+  onAnswer: (selected: string[]) => void;
   onNext: () => void;
-  onCorrect: () => void;
-  onWrong: (question: QuizItem) => void;
   onQuit: () => void; // クイズを中断して章選択に戻る
 }
 
 export default function QuizScreen({
-  questions,
+  question: q,
   index,
+  total,
+  answer,
+  onAnswer,
   onNext,
-  onCorrect,
-  onWrong,
   onQuit,
 }: QuizScreenProps) {
-  const [selected, setSelected] = useState<string[]>([]);
-  const [isAnswered, setIsAnswered] = useState(false);
+  // 複数選択問題で「回答する」を押す前の選択
+  const [pending, setPending] = useState<string[]>([]);
 
-  const q = questions[index];
-  if (!q) return null;
-
+  const isAnswered = answer !== null;
+  const selected = answer ?? pending;
   const isSingleAnswer = q.answer.length === 1;
-
-  // 並び順の違いを無視して一致判定する
-  const normalize = (arr: string[]) => [...arr].sort();
-
-  const isCorrect = isSingleAnswer
-    ? selected[0] === (q.answer[0] ?? "")
-    : normalize(selected).join("|") === normalize(q.answer).join("|");
-
-  const handleAnswer = () => {
-    if (selected.length === 0) return;
-
-    setIsAnswered(true);
-
-    if (isCorrect) {
-      onCorrect();
-    } else {
-      onWrong(q);
-    }
-  };
+  const isCorrect = isAnswered && isCorrectAnswer(q, answer);
 
   // choiceId は選択肢の ID（本文が同じ選択肢があっても区別できる）
   const handleChoiceClick = (choiceId: string) => {
@@ -57,23 +42,20 @@ export default function QuizScreen({
 
     if (isSingleAnswer) {
       // 択一問題はクリックした瞬間に採点
-      setSelected([choiceId]);
-      setIsAnswered(true);
-
-      if (choiceId === (q.answer[0] ?? "")) {
-        onCorrect();
-      } else {
-        onWrong(q);
-      }
+      onAnswer([choiceId]);
     } else {
-      // 複数選択問題は従来通りトグル
-      setSelected((prev) => {
-        if (prev.includes(choiceId)) {
-          return prev.filter((id) => id !== choiceId);
-        }
-        return [...prev, choiceId];
-      });
+      // 複数選択問題はトグル
+      setPending((prev) =>
+        prev.includes(choiceId)
+          ? prev.filter((id) => id !== choiceId)
+          : [...prev, choiceId],
+      );
     }
+  };
+
+  const handleAnswer = () => {
+    if (pending.length === 0) return;
+    onAnswer(pending);
   };
 
   const handleQuit = () => {
@@ -95,7 +77,7 @@ export default function QuizScreen({
     <div className={styles.container}>
       <div className={styles.topBar}>
         <span>
-          {index + 1} / {questions.length}
+          {index + 1} / {total}
         </span>
         <button
           type="button"
@@ -149,7 +131,7 @@ export default function QuizScreen({
         <button
           className={styles.button}
           onClick={handleAnswer}
-          disabled={selected.length === 0}
+          disabled={pending.length === 0}
         >
           回答する
         </button>

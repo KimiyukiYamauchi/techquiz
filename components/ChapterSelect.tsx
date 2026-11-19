@@ -1,17 +1,16 @@
 "use client";
 
-import { scopeKey, scopeLabel, type QuizScope } from "@/lib/quizScope";
+import { useRouter } from "next/navigation";
+import { scopeLabel, type QuizScope } from "@/lib/quizScope";
 import styles from "./Quiz.module.css";
 
 interface ChapterSelectProps {
   scopes: QuizScope[]; // 各章と「すべての問題」
-  onSelectScope: (scope: QuizScope) => void;
 }
 
-export default function ChapterSelect({
-  scopes,
-  onSelectScope,
-}: ChapterSelectProps) {
+export default function ChapterSelect({ scopes }: ChapterSelectProps) {
+  const router = useRouter();
+
   return (
     <div className={styles.container}>
       <h1 className={styles.title}>章を選択</h1>
@@ -20,9 +19,9 @@ export default function ChapterSelect({
           const label = scopeLabel(scope);
           return (
             <button
-              key={scopeKey(scope)}
+              key={scope.id}
               className={styles.button}
-              onClick={() => onSelectScope(scope)}
+              onClick={() => router.push(`/chapter/${scope.id}`)}
               title={label}
             >
               {label}
