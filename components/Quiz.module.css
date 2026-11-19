@@ -62,6 +62,14 @@
   cursor: not-allowed;
 }
 
+/* 結果画面のボタンを縦に並べる */
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+
 .linkButton {
   margin-top: 18px;
   border: none;

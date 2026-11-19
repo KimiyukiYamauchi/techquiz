@@ -8,7 +8,8 @@ interface ResultScreenProps {
   totalQuestions: number;
   wrongQuestions: QuizItem[];
   onReviewWrong: () => void;
-  onRestart: () => void;
+  onRetry: () => void; // 同じ章・同じモードで、全問題を 1 問目からもう一度
+  onBackToChapters: () => void;
 }
 
 export default function ResultScreen({
@@ -16,7 +17,8 @@ export default function ResultScreen({
   totalQuestions,
   wrongQuestions,
   onReviewWrong,
-  onRestart,
+  onRetry,
+  onBackToChapters,
 }: ResultScreenProps) {
   // 出題数が 0 のときは割り算できない（NaN になる）ので「-」と表示する
   const scoreText =
@@ -48,16 +50,24 @@ export default function ResultScreen({
               </li>
             ))}
           </ul>
-
-          <button className={styles.button} onClick={onReviewWrong}>
-            間違った問題を復習する
-          </button>
         </>
       )}
 
-      <button className={styles.button} onClick={onRestart}>
-        最初からやり直す
-      </button>
+      <div className={styles.actions}>
+        {wrongQuestions.length > 0 && (
+          <button className={styles.button} onClick={onReviewWrong}>
+            間違った問題を復習する
+          </button>
+        )}
+
+        <button className={styles.button} onClick={onRetry}>
+          同じ条件でもう一度
+        </button>
+
+        <button className={styles.button} onClick={onBackToChapters}>
+          章選択に戻る
+        </button>
+      </div>
     </div>
   );
 }

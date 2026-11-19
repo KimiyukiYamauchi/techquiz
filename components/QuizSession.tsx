@@ -63,7 +63,9 @@ export default function QuizSession({
         onReviewWrong={() =>
           setState((s) => (s.wrongIds.length > 0 ? startWith(s.wrongIds) : s))
         }
-        onRestart={backToChapters}
+        // 復習の後でも、この章・このモードの全問題で始め直す（ランダムなら並び順も新しくする）
+        onRetry={() => setState(newSession(questions, mode))}
+        onBackToChapters={backToChapters}
       />
     );
   }
