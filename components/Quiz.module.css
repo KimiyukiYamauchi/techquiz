@@ -73,10 +73,23 @@
 
 .topBar {
   display: flex;
+  align-items: center;
   gap: 12px;
   flex-wrap: wrap;
   opacity: 0.85;
   margin-bottom: 14px;
+}
+
+/* クイズ画面右上の「中断」ボタン */
+.quitButton {
+  margin-left: auto;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+  text-decoration: underline;
 }
 
 .choiceList {

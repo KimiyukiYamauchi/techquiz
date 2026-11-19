@@ -13,6 +13,7 @@ interface QuizScreenProps {
   onNext: () => void;
   onCorrect: () => void;
   onWrong: (question: QuizItem) => void;
+  onQuit: () => void; // クイズを中断して章選択に戻る
 }
 
 export default function QuizScreen({
@@ -21,6 +22,7 @@ export default function QuizScreen({
   onNext,
   onCorrect,
   onWrong,
+  onQuit,
 }: QuizScreenProps) {
   const [selected, setSelected] = useState<string[]>([]);
   const [isAnswered, setIsAnswered] = useState(false);
@@ -74,6 +76,16 @@ export default function QuizScreen({
     }
   };
 
+  const handleQuit = () => {
+    if (
+      window.confirm(
+        "クイズを中断して章選択に戻りますか？\nここまでの回答結果は保存されません。",
+      )
+    ) {
+      onQuit();
+    }
+  };
+
   const answerText = q.choices
     .filter((c) => q.answer.includes(c.id))
     .map((c) => c.text)
@@ -85,6 +97,13 @@ export default function QuizScreen({
         <span>
           {index + 1} / {questions.length}
         </span>
+        <button
+          type="button"
+          className={styles.quitButton}
+          onClick={handleQuit}
+        >
+          中断して章選択に戻る
+        </button>
       </div>
 
       <div className={styles.question}>

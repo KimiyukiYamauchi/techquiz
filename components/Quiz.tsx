@@ -138,6 +138,7 @@ export default function Quiz({ data }: QuizProps) {
         onNext={handleNextQuestion}
         onCorrect={handleCorrect}
         onWrong={handleWrong}
+        onQuit={handleRestart}
       />
     );
   }
