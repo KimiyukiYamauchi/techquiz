@@ -18,7 +18,11 @@ export default function ResultScreen({
   onReviewWrong,
   onRestart,
 }: ResultScreenProps) {
-  const score = Math.round((correctCount / totalQuestions) * 100);
+  // 出題数が 0 のときは割り算できない（NaN になる）ので「-」と表示する
+  const scoreText =
+    totalQuestions > 0
+      ? `${Math.round((correctCount / totalQuestions) * 100)}%`
+      : "-";
 
   return (
     <div className={styles.container}>
@@ -28,7 +32,7 @@ export default function ResultScreen({
         正解数: {correctCount} / {totalQuestions}
       </p>
 
-      <p>正答率: {score}%</p>
+      <p>正答率: {scoreText}</p>
 
       <p>不正解数: {wrongQuestions.length}</p>
 
