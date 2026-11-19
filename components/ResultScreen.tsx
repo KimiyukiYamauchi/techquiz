@@ -1,6 +1,8 @@
 "use client";
 
 import type { QuizItem } from "@/types/quiz";
+import { markdownExcerpt } from "@/lib/excerpt";
+import { correctAnswerText } from "@/lib/grading";
 import styles from "./Quiz.module.css";
 
 interface ResultScreenProps {
@@ -45,8 +47,14 @@ export default function ResultScreen({
 
           <ul className={styles.wrongList}>
             {wrongQuestions.map((q) => (
-              <li key={q.id}>
-                {q.chapter} - {q.questionNumber}
+              <li key={q.id} className={styles.wrongItem}>
+                <div className={styles.wrongMeta}>
+                  {q.chapter} - {q.questionNumber}
+                </div>
+                <div>{markdownExcerpt(q.question)}</div>
+                <div className={styles.wrongAnswer}>
+                  正解：{correctAnswerText(q)}
+                </div>
               </li>
             ))}
           </ul>

@@ -6,3 +6,11 @@ export function isCorrectAnswer(q: QuizItem, selected: string[]): boolean {
     Array.from(new Set(ids)).sort().join("|");
   return selected.length > 0 && normalize(selected) === normalize(q.answer);
 }
+
+// 正解の選択肢の本文（複数正解は「 / 」でつなぐ）
+export function correctAnswerText(q: QuizItem): string {
+  return q.choices
+    .filter((c) => q.answer.includes(c.id))
+    .map((c) => c.text)
+    .join(" / ");
+}

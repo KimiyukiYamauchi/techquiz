@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import type { QuizItem } from "@/types/quiz";
-import { isCorrectAnswer } from "@/lib/grading";
+import { correctAnswerText, isCorrectAnswer } from "@/lib/grading";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import remarkBreaks from "remark-breaks";
@@ -68,10 +68,7 @@ export default function QuizScreen({
     }
   };
 
-  const answerText = q.choices
-    .filter((c) => q.answer.includes(c.id))
-    .map((c) => c.text)
-    .join(" / ");
+  const answerText = correctAnswerText(q);
 
   return (
     <div className={styles.container}>
