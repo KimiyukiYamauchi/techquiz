@@ -67,7 +67,8 @@
   - → 使わない方にした。`tailwindcss` / `@tailwindcss/postcss` / `postcss.config.mjs` / `globals.css` を削除し、`globals.css` でしか使っていなかった Geist フォントの読み込みと `antialiased` クラスも外した（見た目は変わらない）
 - [x] 🟡 ダークモードに対応していない（CSS Modules で `white` や `#f7f7f7` を直書きしている）→ CSS 変数にまとめる
   - → 色を `app/globals.css` の CSS 変数にまとめ、`prefers-color-scheme: dark` でダークモード用の値に切り替える（ライトモードの色は変えていない）
-- [ ] 🟡 Markdown のコードブロック（`pre`）にスタイルがなく、長いコードがスマホではみ出す → `overflow-x: auto` などを付ける
+- [x] 🟡 Markdown のコードブロック（`pre`）にスタイルがなく、長いコードがスマホではみ出す → `overflow-x: auto` などを付ける
+  - → `pre` の横スクロールは #12 で対応済み。残っていた、スペースのない長い文字列（URL・インラインコード）と幅の広い表のはみ出しを直し、画像にも幅の上限を付けた
 - [ ] 🟡 解説（`.explanation`）内の表にスタイルが当たっていない（`.question table` のみ定義）
 - [ ] 🟢 `Geist` フォントは `latin` のみで日本語に効かない → `Noto Sans JP` などに変更するか削除する
 - [ ] 🟢 シンタックスハイライト（`rehype-highlight` など）を導入する

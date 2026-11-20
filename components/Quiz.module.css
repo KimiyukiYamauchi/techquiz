@@ -194,6 +194,23 @@
 }
 
 /* Markdown用 */
+
+/* スペースのない長い文字列（URL やインラインコード）も折り返して、スマホではみ出さないようにする
+   （コードブロックの中は white-space: pre なので折り返さず、下の横スクロールになる） */
+.question,
+.explanation,
+.choiceItem,
+.answerLine {
+  overflow-wrap: anywhere;
+}
+
+.question img,
+.explanation img,
+.choiceItem img {
+  max-width: 100%;
+  height: auto;
+}
+
 .question h1,
 .question h2,
 .question h3,
@@ -245,19 +262,28 @@
   padding: 0;
 }
 
-.question table {
+/* 表は幅が足りないときだけ横スクロールする（<table> を block にして、表自体をスクロールの枠にする） */
+.question table,
+.explanation table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
   border-collapse: collapse;
   margin-top: 10px;
 }
 
 .question th,
-.question td {
+.question td,
+.explanation th,
+.explanation td {
   border: 1px solid var(--color-border);
   padding: 8px 12px;
   text-align: center;
+  overflow-wrap: normal; /* セルの中は単語の途中で折り返さず、表ごと横スクロールにする */
 }
 
-.question th {
+.question th,
+.explanation th {
   background: var(--color-table-head-bg);
 }
 
