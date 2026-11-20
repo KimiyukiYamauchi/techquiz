@@ -16,7 +16,7 @@
 
 - [x] 🔴 `next` を 16.4.1 以降へ更新する（16.4.0 以下に既知の脆弱性。`eslint-config-next` も合わせて更新）→ 16.4.6 に更新
 - [x] 🔴 `npm audit fix` で `sharp` などの間接依存の脆弱性を解消する → `npm audit` で 0 件
-- [ ] 🟢 `react` / `react-dom` / `@types/*` / `@tailwindcss/postcss` をマイナー更新する
+- [ ] 🟢 `react` / `react-dom` / `@types/*` をマイナー更新する（`@tailwindcss/postcss` は削除済み）
 - [ ] 🟢 Dependabot（または Renovate）を設定して依存更新を自動化する
 - [ ] 🟢 `next.config.ts` でセキュリティヘッダー（`X-Content-Type-Options`、`Referrer-Policy` など）を設定する
 
@@ -62,8 +62,9 @@
 
 ## 5. スタイル・デザイン
 
-- [ ] 🟡 `globals.css` の import がコメントアウトされている（[layout.tsx:3](app/layout.tsx#L3)）
+- [x] 🟡 `globals.css` の import がコメントアウトされている（layout.tsx:3）
   - 現状 Tailwind は使われていない → 使うなら有効化し、使わないなら `tailwindcss` / `@tailwindcss/postcss` / `postcss.config.mjs` を削除する
+  - → 使わない方にした。`tailwindcss` / `@tailwindcss/postcss` / `postcss.config.mjs` / `globals.css` を削除し、`globals.css` でしか使っていなかった Geist フォントの読み込みと `antialiased` クラスも外した（見た目は変わらない）
 - [ ] 🟡 ダークモードに対応していない（CSS Modules で `white` や `#f7f7f7` を直書きしている）→ CSS 変数にまとめる
 - [ ] 🟡 Markdown のコードブロック（`pre`）にスタイルがなく、長いコードがスマホではみ出す → `overflow-x: auto` などを付ける
 - [ ] 🟡 解説（`.explanation`）内の表にスタイルが当たっていない（`.question table` のみ定義）
