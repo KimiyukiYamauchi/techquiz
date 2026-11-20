@@ -1,0 +1,62 @@
+/* 配色の CSS 変数（コンポーネントの CSS Modules からはこの変数を使う）
+   ライトモードの値はこれまで直書きしていた色そのまま。
+   ダークモードは OS / ブラウザの設定（prefers-color-scheme）に合わせて切り替える */
+:root {
+  /* ブラウザ標準の部品（スクロールバー・確認ダイアログ・リンク色など）もモードに合わせる */
+  color-scheme: light dark;
+
+  --color-bg: #fff;
+  --color-text: #000;
+
+  --color-surface: #fff; /* ボタンの背景 */
+  --color-surface-hover: #f5faff; /* ボタン・選択肢にマウスを乗せたとき */
+  --color-border: #ccc;
+  --color-border-subtle: #eee; /* 選択肢の枠 */
+
+  --color-accent: #2196f3; /* 選択中の枠・フォーカス枠 */
+  --color-selected-bg: #e0f2ff;
+
+  --color-correct: green;
+  --color-correct-bg: #e9fbe9;
+  --color-correct-border: #2e7d32;
+
+  --color-wrong: red;
+  --color-wrong-bg: #ffecec;
+  --color-wrong-border: #c62828;
+
+  --color-explanation-bg: #f7f7f7;
+  --color-code-bg: #eee;
+  --color-table-head-bg: #f0f0f0;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #121212;
+    --color-text: #e8e8e8;
+
+    --color-surface: #1e1e1e;
+    --color-surface-hover: #1f2a36;
+    --color-border: #555;
+    --color-border-subtle: #3a3a3a;
+
+    --color-accent: #64b5f6;
+    --color-selected-bg: #0d3a5c;
+
+    --color-correct: #81c784;
+    --color-correct-bg: #1b3a1f;
+    --color-correct-border: #66bb6a;
+
+    --color-wrong: #ef9a9a;
+    --color-wrong-bg: #4a1c1c;
+    --color-wrong-border: #ef5350;
+
+    --color-explanation-bg: #1e1e1e;
+    --color-code-bg: #2d2d2d;
+    --color-table-head-bg: #262626;
+  }
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+}

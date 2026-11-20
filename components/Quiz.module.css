@@ -59,16 +59,17 @@
   width: 100%;
   text-align: left; /* ← 左寄せにすると見やすい */
   padding: 12px 16px;
-  border: 1px solid #ccc;
+  border: 1px solid var(--color-border);
   border-radius: 10px;
-  background: white;
+  background: var(--color-surface);
+  color: var(--color-text);
   cursor: pointer;
   white-space: normal; /* 長い章名も折り返して全文表示 */
   overflow-wrap: anywhere;
 }
 
 .button:hover {
-  background: #f5faff;
+  background: var(--color-surface-hover);
 }
 
 .button:disabled {
@@ -88,6 +89,7 @@
   margin-top: 18px;
   border: none;
   background: transparent;
+  color: inherit;
   cursor: pointer;
   text-decoration: underline;
   opacity: 0.8;
@@ -122,19 +124,19 @@
 
 .choiceItem {
   padding: 10px 12px;
-  border: 1px solid #eee;
+  border: 1px solid var(--color-border-subtle);
   border-radius: 10px;
   margin-bottom: 10px;
   cursor: pointer;
 }
 
 .choiceItem:hover:not(.correctChoice):not(.wrongChoice) {
-  background: #f5faff;
+  background: var(--color-surface-hover);
 }
 
 /* キーボードで選んでいる選択肢が分かるようにする */
 .choiceItem:focus-visible {
-  outline: 2px solid #2196f3;
+  outline: 2px solid var(--color-accent);
   outline-offset: 2px;
 }
 
@@ -143,17 +145,17 @@
 }
 
 .selected {
-  background: #e0f2ff;
-  border-color: #2196f3;
+  background: var(--color-selected-bg);
+  border-color: var(--color-accent);
 }
 
 .correct {
-  color: green;
+  color: var(--color-correct);
   font-weight: bold;
 }
 
 .wrong {
-  color: red;
+  color: var(--color-wrong);
   font-weight: bold;
 }
 
@@ -163,13 +165,13 @@
 }
 
 .correctChoice {
-  background: #e9fbe9;
-  border-color: #2e7d32;
+  background: var(--color-correct-bg);
+  border-color: var(--color-correct-border);
 }
 
 .wrongChoice {
-  background: #ffecec;
-  border-color: #c62828;
+  background: var(--color-wrong-bg);
+  border-color: var(--color-wrong-border);
 }
 
 .answerLine {
@@ -186,7 +188,7 @@
   margin-top: 10px;
   margin-bottom: 10px;
   padding: 10px;
-  background: #f7f7f7;
+  background: var(--color-explanation-bg);
   border-radius: 8px;
   line-height: 1.6;
 }
@@ -211,7 +213,7 @@
 .explanation code,
 .choiceItem code,
 .answerLine code {
-  background: #eee;
+  background: var(--color-code-bg);
   padding: 2px 4px;
   border-radius: 4px;
 }
@@ -232,7 +234,7 @@
 .answerLine pre {
   overflow-x: auto;
   padding: 8px 10px;
-  background: #eee;
+  background: var(--color-code-bg);
   border-radius: 6px;
 }
 
@@ -250,13 +252,13 @@
 
 .question th,
 .question td {
-  border: 1px solid #ccc;
+  border: 1px solid var(--color-border);
   padding: 8px 12px;
   text-align: center;
 }
 
 .question th {
-  background: #f0f0f0;
+  background: var(--color-table-head-bg);
 }
 
 @media (max-width: 600px) {
