@@ -108,6 +108,6 @@
 
 ## 10. ドキュメント
 
-- [ ] 🟢 README のディレクトリ構成に `app/layout.tsx`・`types/` の説明・`IMPROVEMENTS.md` を追記する
-- [ ] 🟢 README に `npm run lint` などの開発コマンドと、microCMS の API キー権限（GET のみで十分）の注意を追記する
+- [x] 🟢 README のディレクトリ構成に `app/layout.tsx`・`types/` の説明・`IMPROVEMENTS.md` を追記する
+- [x] 🟢 README に `npm run lint` などの開発コマンドと、microCMS の API キー権限（GET のみで十分）の注意を追記する
 - [ ] 🟢 `.env.example` を追加する（現在は README に記載しているだけ。`.gitignore` の `.env*` から `!.env.example` で除外する）
