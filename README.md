@@ -72,6 +72,8 @@ Tech+の問題を学習できるクイズアプリです。
 
 ```
 techquiz/
+├── .github/workflows/
+│   └── ci.yml          # PR ごとに lint・型チェック・テスト・ビルドを実行
 ├── app/
 │   ├── page.tsx                    # 章選択（/）
 │   ├── chapter/[id]/page.tsx       # モード選択（/chapter/[id]）
@@ -172,6 +174,22 @@ MICROCMS_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxx  # GET 権限のある API キー
 単体テストは `lib/*.test.ts` にあります（microCMS の変換・並べ替え、採点）。microCMS や `.env.local` が無くても実行できます。
 
 `npm run dev` を起動したまま、同じフォルダで `npm run build` を実行しないでください。どちらも `.next/` を使うため、開発サーバーが変更を反映しなくなることがあります。そうなったら開発サーバーを再起動してください。
+
+### CI（GitHub Actions）
+
+PR を作ったとき・更新したときと、`main` に push したときに、`.github/workflows/ci.yml` が次の 2 つのジョブを実行します。
+
+| ジョブ                     | 内容                                                              |
+| -------------------------- | ----------------------------------------------------------------- |
+| lint / 型チェック / テスト | `npm run lint`・`npx tsc --noEmit`・`npm test`                    |
+| build                      | `npm run build`（microCMS から問題を取得するため API キーが必要） |
+
+build ジョブを動かすには、GitHub の Settings → Secrets and variables → Actions → Secrets に、次の 2 つを登録してください（値は `.env.local` と同じです）。
+
+- `MICROCMS_SERVICE_DOMAIN`
+- `MICROCMS_API_KEY`（GET 権限だけのキー）
+
+エンドポイント名を変えている場合は、同じ画面の Variables に `MICROCMS_ENDPOINT` を登録します。Secrets が無いとき（未登録の場合や、フォークからの PR の場合）は、build ジョブはビルドを省略して警告を出します。
 
 ## 🗂 microCMS の API 構成
 

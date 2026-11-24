@@ -111,7 +111,8 @@
   - 採点ロジック（択一 / 複数選択 / 順不同）
   - 章の並び順（「第2章」が「第10章」より前）
   - → Vitest 4 を導入し、`npm test` で実行できるようにした。変換処理は `lib/microcms.ts` から `lib/cmsQuestion.ts` に切り出し、`lib/cmsQuestion.test.ts`・`lib/grading.test.ts` に 30 件のテストを書いた
-- [ ] 🟡 GitHub Actions で `lint` / `tsc --noEmit` / テスト / `build` を PR ごとに実行する
+- [x] 🟡 GitHub Actions で `lint` / `tsc --noEmit` / テスト / `build` を PR ごとに実行する
+  - → `.github/workflows/ci.yml` を追加。build は Secrets の `MICROCMS_SERVICE_DOMAIN` / `MICROCMS_API_KEY` を使い、無いときは警告を出して省略する
 - [ ] 🟢 Playwright で「章選択 → 回答 → 結果 → 復習」の E2E テストを追加する
 - [ ] 🟢 `scripts/json_to_microcms_csv.py` のテストを追加する（正解が選択肢に無い場合のエラーなど）
 
