@@ -1,0 +1,70 @@
+# PR ごと（と main への push）に lint・型チェック・単体テスト・ビルドを実行する
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# 読み取りだけで十分（コードの書き換えやコメントはしない）
+permissions:
+  contents: read
+
+# 同じ PR / ブランチに続けて push したら、古い実行は止める
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # API キーを使わずにできるチェック
+  check:
+    name: lint / 型チェック / テスト
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+      - name: lint
+        run: npm run lint
+      - name: 型チェック
+        run: npx tsc --noEmit
+      - name: 単体テスト
+        run: npm test
+
+  # ビルドは microCMS から問題を取得するので、リポジトリの Secrets に API キーが必要
+  # （Settings → Secrets and variables → Actions に MICROCMS_SERVICE_DOMAIN / MICROCMS_API_KEY を登録する）
+  build:
+    name: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      MICROCMS_SERVICE_DOMAIN: ${{ secrets.MICROCMS_SERVICE_DOMAIN }}
+      MICROCMS_API_KEY: ${{ secrets.MICROCMS_API_KEY }}
+      MICROCMS_ENDPOINT: ${{ vars.MICROCMS_ENDPOINT }}
+    steps:
+      # Secrets が無いとき（未登録、またはフォークからの PR）はビルドを飛ばし、警告だけ出す
+      - name: API キーの確認
+        id: secrets
+        run: |
+          if [ -n "$MICROCMS_SERVICE_DOMAIN" ] && [ -n "$MICROCMS_API_KEY" ]; then
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "::warning title=build を省略::MICROCMS_SERVICE_DOMAIN / MICROCMS_API_KEY が Secrets に無いため、ビルドを実行しませんでした"
+          fi
+      - uses: actions/checkout@v7
+        if: steps.secrets.outputs.available == 'true'
+      - uses: actions/setup-node@v7
+        if: steps.secrets.outputs.available == 'true'
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci
+        if: steps.secrets.outputs.available == 'true'
+      - name: build
+        if: steps.secrets.outputs.available == 'true'
+        run: npm run build
