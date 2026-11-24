@@ -94,10 +94,13 @@
 
 ## 7. コード品質・構成
 
-- [ ] 🟡 `"sequential" | "random"` 型が `Quiz.tsx` と `ModeSelect.tsx` で重複している → `types/quiz.ts` に `QuizMode` として定義する
-- [ ] 🟢 コメントアウトされた `mode` state を削除する（[Quiz.tsx:21](components/Quiz.tsx#L21)、[Quiz.tsx:50](components/Quiz.tsx#L50)）
+- [x] 🟡 `"sequential" | "random"` 型が `Quiz.tsx` と `ModeSelect.tsx` で重複している → `types/quiz.ts` に `QuizMode` として定義する
+  - → #8（8df5f1b）で対応済み。`QuizMode` を `types/quiz.ts` に定義して各所から import し、`Quiz.tsx` は削除した
+- [x] 🟢 コメントアウトされた `mode` state を削除する（[Quiz.tsx:21](components/Quiz.tsx#L21)、[Quiz.tsx:50](components/Quiz.tsx#L50)）
+  - → #8（8df5f1b）で `Quiz.tsx` ごと削除済み
 - [ ] 🟢 クイズ進行の state（questions / index / correctCount / wrongQuestions）を `useReducer` かカスタムフックにまとめる
-- [ ] 🟢 採点ロジック（`isCorrect`）を純粋関数として切り出す（テストしやすくなる）
+- [x] 🟢 採点ロジック（`isCorrect`）を純粋関数として切り出す（テストしやすくなる）
+  - → #8（8df5f1b）で `lib/grading.ts` の `isCorrectAnswer` として切り出し済み
 - [ ] 🟢 使っていない `public/*.svg`（create-next-app のテンプレート）を削除する
 - [ ] 🟢 Prettier を導入し、`format` / `typecheck` スクリプトを `package.json` に追加する
 
