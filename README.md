@@ -90,6 +90,7 @@ techquiz/
 │   └── Quiz.module.css
 ├── lib/
 │   ├── microcms.ts     # microCMS から全問題を取得（サーバー専用）
+│   ├── cmsQuestion.ts  # microCMS の問題 → QuizItem の変換と並べ替え
 │   ├── quizScope.ts    # 出題範囲（章 / すべての問題）と URL の章 ID
 │   ├── quizSession.ts  # クイズの進み具合を sessionStorage に保存・復元
 │   ├── grading.ts      # 正解判定・正解の本文
@@ -158,13 +159,17 @@ MICROCMS_API_KEY=xxxxxxxxxxxxxxxxxxxxxxxx  # GET 権限のある API キー
 
 ### 開発コマンド
 
-| コマンド           | 内容                                                        |
-| ------------------ | ----------------------------------------------------------- |
-| `npm run dev`      | 開発サーバーを起動（http://localhost:3000）                 |
-| `npm run build`    | 本番用にビルド（microCMS から問題を取得して各ページを生成） |
-| `npm run start`    | ビルドしたアプリを起動                                      |
-| `npm run lint`     | ESLint でコードをチェック                                   |
-| `npx tsc --noEmit` | TypeScript の型チェック                                     |
+| コマンド             | 内容                                                        |
+| -------------------- | ----------------------------------------------------------- |
+| `npm run dev`        | 開発サーバーを起動（http://localhost:3000）                 |
+| `npm run build`      | 本番用にビルド（microCMS から問題を取得して各ページを生成） |
+| `npm run start`      | ビルドしたアプリを起動                                      |
+| `npm run lint`       | ESLint でコードをチェック                                   |
+| `npx tsc --noEmit`   | TypeScript の型チェック                                     |
+| `npm test`           | 単体テストを実行（Vitest）                                  |
+| `npm run test:watch` | ファイルの変更を監視して単体テストを実行し直す              |
+
+単体テストは `lib/*.test.ts` にあります（microCMS の変換・並べ替え、採点）。microCMS や `.env.local` が無くても実行できます。
 
 `npm run dev` を起動したまま、同じフォルダで `npm run build` を実行しないでください。どちらも `.next/` を使うため、開発サーバーが変更を反映しなくなることがあります。そうなったら開発サーバーを再起動してください。
 
