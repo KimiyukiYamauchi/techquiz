@@ -106,10 +106,11 @@
 
 ## 8. テスト・CI
 
-- [ ] 🟡 単体テストを追加する（Vitest など）
+- [x] 🟡 単体テストを追加する（Vitest など）
   - `toQuizItem`（microCMS → QuizItem の変換、正解 ID の対応付け、欠損値）
   - 採点ロジック（択一 / 複数選択 / 順不同）
   - 章の並び順（「第2章」が「第10章」より前）
+  - → Vitest 4 を導入し、`npm test` で実行できるようにした。変換処理は `lib/microcms.ts` から `lib/cmsQuestion.ts` に切り出し、`lib/cmsQuestion.test.ts`・`lib/grading.test.ts` に 30 件のテストを書いた
 - [ ] 🟡 GitHub Actions で `lint` / `tsc --noEmit` / テスト / `build` を PR ごとに実行する
 - [ ] 🟢 Playwright で「章選択 → 回答 → 結果 → 復習」の E2E テストを追加する
 - [ ] 🟢 `scripts/json_to_microcms_csv.py` のテストを追加する（正解が選択肢に無い場合のエラーなど）
